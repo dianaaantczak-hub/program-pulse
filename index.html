@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Pulse</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: { accent: '#3B82F6' }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', ui-sans-serif, system-ui, sans-serif; }
+    .sidebar::-webkit-scrollbar { width: 6px; }
+    .sidebar::-webkit-scrollbar-track { background: #f9fafb; }
+    .sidebar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 3px; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 h-screen flex flex-col overflow-hidden">
+
+  <!-- Top Bar -->
+  <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+    <div class="flex items-center gap-3">
+      <div class="w-7 h-7 bg-blue-500 rounded-md flex items-center justify-center">
+        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+      </div>
+      <span class="font-semibold text-gray-900 tracking-tight">Program Pulse</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <select id="demo-select" class="text-sm border border-gray-200 rounded-md px-3 py-1.5 text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        <option value="">Load Demo...</option>
+        <option value="green">Green — Product Launch (Healthy)</option>
+        <option value="amber">Amber — Platform Migration (At Risk)</option>
+        <option value="red">Red — Office Expansion (Critical)</option>
+      </select>
+      <button class="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
+        Settings
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Layout -->
+  <div class="flex flex-1 overflow-hidden">
+
+    <!-- Left Sidebar — Input Form -->
+    <aside class="sidebar w-[35%] min-w-[320px] bg-white border-r border-gray-200 overflow-y-auto flex-shrink-0">
+      <div class="p-5 border-b border-gray-100">
+        <h2 class="text-sm font-semibold text-gray-700 uppercase tracking-wider">Program Input</h2>
+        <p class="text-xs text-gray-400 mt-0.5">Fill in your program details to generate a health report</p>
+      </div>
+
+      <form id="program-form" class="p-5 space-y-7" onsubmit="return false;">
+
+        <!-- Section: Program Info -->
+        <section>
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Program Info</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Program Name</label>
+              <input id="field-name" type="text" placeholder="e.g. Platform Migration"
+                class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Program Owner</label>
+              <input id="field-owner" type="text" placeholder="Name or team"
+                class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Program Phase</label>
+              <input id="field-phase" type="text" placeholder="e.g. Q2 Execution"
+                class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea id="field-description" rows="3" placeholder="Brief description of the program..."
+                class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 resize-none"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section: Stakeholders -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Stakeholders</h3>
+            <button type="button" onclick="addStakeholderRow()"
+              class="text-xs text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Add
+            </button>
+          </div>
+          <div class="space-y-2" id="stakeholders-list"></div>
+        </section>
+
+        <!-- Section: Metrics / KPIs -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Metrics / KPIs</h3>
+            <button type="button" onclick="addMetricRow()"
+              class="text-xs text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Add
+            </button>
+          </div>
+          <div class="space-y-2" id="metrics-list"></div>
+        </section>
+
+        <!-- Section: Milestones -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Milestones</h3>
+            <button type="button" onclick="addMilestoneRow()"
+              class="text-xs text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Add
+            </button>
+          </div>
+          <div class="space-y-2" id="milestones-list"></div>
+        </section>
+
+        <!-- Section: Blockers -->
+        <section>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Blockers</h3>
+            <button type="button" onclick="addBlockerRow()"
+              class="text-xs text-blue-500 hover:text-blue-600 font-medium flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Add
+            </button>
+          </div>
+          <div class="space-y-2" id="blockers-list"></div>
+        </section>
+
+        <!-- Section: Context -->
+        <section>
+          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Context</h3>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Key Decisions Needed</label>
+              <textarea id="field-decisions" rows="3" placeholder="What decisions need to be made to move forward?"
+                class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 resize-none"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Open Risks</label>
+              <textarea id="field-risks" rows="3" placeholder="Known risks that aren't yet blockers..."
+                class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 resize-none"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <!-- Save -->
+        <div class="pt-2 pb-4">
+          <button type="button" onclick="saveProgram()"
+            class="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 rounded-md text-sm transition-colors">
+            Save Program
+          </button>
+          <p id="save-timestamp" class="text-xs text-gray-400 text-center mt-2">Last saved: —</p>
+        </div>
+
+      </form>
+    </aside>
+
+    <!-- Right Panel — Dashboard -->
+    <main class="flex-1 overflow-y-auto bg-gray-50">
+
+      <!-- Dashboard Header -->
+      <div class="bg-white border-b border-gray-200 px-6 py-4">
+        <div class="flex items-start justify-between">
+          <div>
+            <h1 id="dash-name" class="text-xl font-semibold text-gray-900">Program Name</h1>
+            <p id="dash-meta" class="text-sm text-gray-500 mt-0.5">Owner · Phase</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span id="dash-badge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-100 text-gray-500 border border-gray-200">
+              <span class="w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+              No Data
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Grid -->
+      <div class="p-6 space-y-5">
+
+        <!-- Health Summary Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-gray-700">Health Summary</h2>
+            <span class="text-xs text-gray-400">Auto-calculated</span>
+          </div>
+          <div class="flex items-center gap-4">
+            <div id="dash-health-circle" class="w-14 h-14 rounded-full bg-gray-100 border-4 border-gray-200 flex items-center justify-center flex-shrink-0">
+              <span class="text-xs font-bold text-gray-400">—</span>
+            </div>
+            <div>
+              <p id="dash-health-label" class="text-sm font-medium text-gray-700">Awaiting program data</p>
+              <p id="dash-health-sub" class="text-xs text-gray-400 mt-0.5">Fill in the form to calculate health score</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stakeholders Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <h2 class="text-sm font-semibold text-gray-700 mb-3">Stakeholders</h2>
+          <div id="dash-stakeholders" class="space-y-2">
+            <span class="text-sm text-gray-400 italic">No stakeholders added</span>
+          </div>
+        </div>
+
+        <!-- Metrics Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-base font-semibold text-gray-800">Metrics / KPIs</h2>
+            <span id="dash-metrics-count" class="text-xs text-gray-400">0 metrics tracked</span>
+          </div>
+          <div id="dash-metrics" class="divide-y divide-gray-100">
+            <div class="grid grid-cols-4 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <span class="col-span-2">Metric</span>
+              <span class="text-right">Current</span>
+              <span class="text-right">Target</span>
+            </div>
+            <div class="py-3"><span class="text-sm text-gray-400 italic">No metrics added</span></div>
+          </div>
+        </div>
+
+        <!-- Milestones Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-gray-700">Milestones</h2>
+            <span id="dash-milestones-count" class="text-xs text-gray-400">0 of 0 complete</span>
+          </div>
+          <div class="w-full bg-gray-100 rounded-full h-1.5 mb-4">
+            <div id="dash-milestones-bar" class="bg-blue-500 h-1.5 rounded-full transition-all" style="width: 0%"></div>
+          </div>
+          <div id="dash-milestones" class="space-y-2">
+            <span class="text-sm text-gray-400 italic">No milestones added</span>
+          </div>
+        </div>
+
+        <!-- Blockers Card -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <h2 class="text-sm font-semibold text-gray-700 mb-3">Blockers</h2>
+          <div id="dash-blockers" class="space-y-2">
+            <span class="text-sm text-gray-400 italic">No blockers added</span>
+          </div>
+        </div>
+
+        <!-- AI Analysis Card -->
+        <div class="bg-blue-50 rounded-lg border border-blue-100 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-5 h-5 bg-blue-500 rounded flex items-center justify-center">
+                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+              <h2 class="text-sm font-semibold text-gray-700">AI Analysis</h2>
+            </div>
+            <span class="text-xs text-blue-400 font-medium">Claude · claude-sonnet-4-6</span>
+          </div>
+          <div id="dash-ai-content" class="space-y-2">
+            <div class="h-4 bg-blue-100 rounded animate-pulse"></div>
+            <div class="h-4 bg-blue-100 rounded animate-pulse w-4/5"></div>
+            <div class="h-4 bg-blue-100 rounded animate-pulse w-3/5"></div>
+          </div>
+          <p class="text-xs text-blue-400 mt-3 italic">Run "Analyze with AI" to generate insights</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="bg-white rounded-lg border border-gray-200 p-5">
+          <h2 class="text-sm font-semibold text-gray-700 mb-4">Generate Outputs</h2>
+          <div class="grid grid-cols-2 gap-3">
+            <button class="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-4 rounded-md text-sm transition-colors col-span-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Analyze with AI
+            </button>
+            <button class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Exec Brief
+            </button>
+            <button class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+              </svg>
+              Program Report
+            </button>
+            <button class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors col-span-2">
+              <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+              </svg>
+              Status Update (Slack / Email)
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
+
+  <script>
+    // ── Shared field classes ──────────────────────────────────────────────────
+    const INPUT_CLS = 'border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 bg-white';
+    const SELECT_CLS = 'border border-gray-200 rounded-md px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-600 bg-white';
+
+    function removeRowBtn() {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'text-gray-300 hover:text-red-400 transition-colors flex-shrink-0';
+      btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>`;
+      btn.addEventListener('click', (e) => e.currentTarget.closest('[data-row]').remove());
+      return btn;
+    }
+
+    // ── Stakeholders ─────────────────────────────────────────────────────────
+    function addStakeholderRow(name = '', role = '') {
+      const row = document.createElement('div');
+      row.dataset.row = 'stakeholder';
+      row.className = 'flex gap-2 items-center';
+
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.placeholder = 'Name';
+      nameInput.value = name;
+      nameInput.className = `flex-1 ${INPUT_CLS}`;
+
+      const roleInput = document.createElement('input');
+      roleInput.type = 'text';
+      roleInput.placeholder = 'Role / Team';
+      roleInput.value = role;
+      roleInput.className = `flex-1 ${INPUT_CLS}`;
+
+      row.append(nameInput, roleInput, removeRowBtn());
+      document.getElementById('stakeholders-list').appendChild(row);
+    }
+
+    // ── Metrics ───────────────────────────────────────────────────────────────
+    function addMetricRow(name = '', current = '', target = '', status = 'on-track') {
+      const row = document.createElement('div');
+      row.dataset.row = 'metric';
+      row.className = 'flex gap-2 items-center';
+
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.placeholder = 'Metric name';
+      nameInput.value = name;
+      nameInput.className = `flex-[2] ${INPUT_CLS}`;
+
+      const curInput = document.createElement('input');
+      curInput.type = 'text';
+      curInput.placeholder = 'Current';
+      curInput.value = current;
+      curInput.className = `flex-1 min-w-0 ${INPUT_CLS}`;
+
+      const tgtInput = document.createElement('input');
+      tgtInput.type = 'text';
+      tgtInput.placeholder = 'Target';
+      tgtInput.value = target;
+      tgtInput.className = `flex-1 min-w-0 ${INPUT_CLS}`;
+
+      const sel = document.createElement('select');
+      sel.className = SELECT_CLS;
+      [['on-track', 'On Track'], ['at-risk', 'At Risk'], ['off-track', 'Off Track']].forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        if (val === status) opt.selected = true;
+        sel.appendChild(opt);
+      });
+
+      row.append(nameInput, curInput, tgtInput, sel, removeRowBtn());
+      document.getElementById('metrics-list').appendChild(row);
+    }
+
+    // ── Milestones ────────────────────────────────────────────────────────────
+    function addMilestoneRow(name = '', dueDate = '', owner = '', status = 'not-started') {
+      const row = document.createElement('div');
+      row.dataset.row = 'milestone';
+      row.className = 'border border-gray-100 rounded-md p-3 space-y-2 bg-gray-50';
+
+      const top = document.createElement('div');
+      top.className = 'flex gap-2';
+
+      const nameInput = document.createElement('input');
+      nameInput.type = 'text';
+      nameInput.placeholder = 'Milestone name';
+      nameInput.value = name;
+      nameInput.className = `flex-1 ${INPUT_CLS}`;
+
+      const dateInput = document.createElement('input');
+      dateInput.type = 'date';
+      dateInput.value = dueDate;
+      dateInput.className = SELECT_CLS;
+
+      top.append(nameInput, dateInput);
+
+      const bottom = document.createElement('div');
+      bottom.className = 'flex gap-2 items-center';
+
+      const ownerInput = document.createElement('input');
+      ownerInput.type = 'text';
+      ownerInput.placeholder = 'Owner';
+      ownerInput.value = owner;
+      ownerInput.className = `flex-1 ${INPUT_CLS}`;
+
+      const sel = document.createElement('select');
+      sel.className = SELECT_CLS;
+      [['not-started', 'Not Started'], ['in-progress', 'In Progress'], ['complete', 'Complete'], ['at-risk', 'At Risk']].forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        if (val === status) opt.selected = true;
+        sel.appendChild(opt);
+      });
+
+      bottom.append(ownerInput, sel, removeRowBtn());
+      row.append(top, bottom);
+      document.getElementById('milestones-list').appendChild(row);
+    }
+
+    // ── Blockers ──────────────────────────────────────────────────────────────
+    function addBlockerRow(description = '', severity = 'medium', owner = '') {
+      const row = document.createElement('div');
+      row.dataset.row = 'blocker';
+      row.className = 'border border-gray-100 rounded-md p-3 space-y-2 bg-gray-50';
+
+      const textarea = document.createElement('textarea');
+      textarea.rows = 2;
+      textarea.placeholder = 'Describe the blocker...';
+      textarea.value = description;
+      textarea.className = `w-full resize-none ${INPUT_CLS}`;
+
+      const bottom = document.createElement('div');
+      bottom.className = 'flex gap-2 items-center';
+
+      const sel = document.createElement('select');
+      sel.className = SELECT_CLS;
+      [['critical', 'Critical'], ['medium', 'Medium'], ['low', 'Low']].forEach(([val, label]) => {
+        const opt = document.createElement('option');
+        opt.value = val;
+        opt.textContent = label;
+        if (val === severity) opt.selected = true;
+        sel.appendChild(opt);
+      });
+
+      const ownerInput = document.createElement('input');
+      ownerInput.type = 'text';
+      ownerInput.placeholder = 'Owner';
+      ownerInput.value = owner;
+      ownerInput.className = `flex-1 ${INPUT_CLS}`;
+
+      bottom.append(sel, ownerInput, removeRowBtn());
+      row.append(textarea, bottom);
+      document.getElementById('blockers-list').appendChild(row);
+    }
+
+    // ── Read form data ────────────────────────────────────────────────────────
+    function readFormData() {
+      const stakeholders = [...document.querySelectorAll('[data-row="stakeholder"]')].map(row => {
+        const [name, role] = row.querySelectorAll('input');
+        return { name: name.value.trim(), role: role.value.trim() };
+      }).filter(s => s.name || s.role);
+
+      const metrics = [...document.querySelectorAll('[data-row="metric"]')].map(row => {
+        const inputs = row.querySelectorAll('input');
+        const sel = row.querySelector('select');
+        return { name: inputs[0].value.trim(), current: inputs[1].value.trim(), target: inputs[2].value.trim(), status: sel.value };
+      }).filter(m => m.name);
+
+      const milestones = [...document.querySelectorAll('[data-row="milestone"]')].map(row => {
+        const inputs = row.querySelectorAll('input');
+        const sel = row.querySelector('select');
+        return { name: inputs[0].value.trim(), dueDate: inputs[1].value, owner: inputs[2].value.trim(), status: sel.value };
+      }).filter(m => m.name);
+
+      const blockers = [...document.querySelectorAll('[data-row="blocker"]')].map(row => {
+        const textarea = row.querySelector('textarea');
+        const sel = row.querySelector('select');
+        const ownerInput = row.querySelector('input');
+        return { description: textarea.value.trim(), severity: sel.value, owner: ownerInput.value.trim() };
+      }).filter(b => b.description);
+
+      return {
+        name: document.getElementById('field-name').value.trim(),
+        owner: document.getElementById('field-owner').value.trim(),
+        phase: document.getElementById('field-phase').value.trim(),
+        description: document.getElementById('field-description').value.trim(),
+        stakeholders,
+        metrics,
+        milestones,
+        blockers,
+        decisionsNeeded: document.getElementById('field-decisions').value.trim(),
+        openRisks: document.getElementById('field-risks').value.trim(),
+      };
+    }
+
+    // ── Health scoring ────────────────────────────────────────────────────────
+    // Returns 'red' | 'amber' | 'green' | 'none' based on program data.
+    function calculateHealthScore(data) {
+      const { metrics = [], milestones = [], blockers = [] } = data;
+      if (!metrics.length && !milestones.length && !blockers.length) return 'none';
+
+      const offTrackMetrics  = metrics.filter(m => m.status === 'off-track').length;
+      const atRiskMetrics    = metrics.filter(m => m.status === 'at-risk').length;
+      const atRiskMilestones = milestones.filter(m => m.status === 'at-risk').length;
+      const criticalBlockers = blockers.filter(b => b.severity === 'critical').length;
+
+      if (offTrackMetrics > 0 || atRiskMilestones > 1 || criticalBlockers > 0) return 'red';
+      if (atRiskMetrics > 0 || atRiskMilestones === 1 || criticalBlockers > 0)  return 'amber';
+      return 'green';
+    }
+
+    // ── Status chip helpers ───────────────────────────────────────────────────
+    const MILESTONE_CHIP = {
+      'complete':    'bg-green-100 text-green-700',
+      'in-progress': 'bg-blue-100 text-blue-700',
+      'not-started': 'bg-gray-100 text-gray-500',
+      'at-risk':     'bg-red-100 text-red-700',
+    };
+    const MILESTONE_LABEL = {
+      'complete': 'Complete', 'in-progress': 'In Progress',
+      'not-started': 'Not Started', 'at-risk': 'At Risk',
+    };
+    const METRIC_CHIP = {
+      'on-track':  'bg-green-100 text-green-700',
+      'at-risk':   'bg-amber-100 text-amber-700',
+      'off-track': 'bg-red-100 text-red-700',
+    };
+    const METRIC_LABEL = {
+      'on-track': 'On Track', 'at-risk': 'At Risk', 'off-track': 'Off Track',
+    };
+    const BLOCKER_SEVERITY_CHIP = {
+      'critical': 'bg-red-100 text-red-700 border border-red-200',
+      'medium':   'bg-amber-100 text-amber-700',
+      'low':      'bg-gray-100 text-gray-500',
+    };
+
+    function chip(text, cls) {
+      return `<span class="inline-block px-2 py-0.5 rounded-full text-xs font-medium ${cls}">${text}</span>`;
+    }
+
+    // ── Update dashboard panels ───────────────────────────────────────────────
+    function updateDashboard(data) {
+      const hasContent = data.name || data.metrics.length || data.milestones.length;
+
+      // Header
+      document.getElementById('dash-name').textContent = data.name || 'Program Name';
+      const metaParts = [data.owner, data.phase].filter(Boolean);
+      document.getElementById('dash-meta').textContent = metaParts.join(' · ') || 'Owner · Phase';
+
+      // Health badge + summary circle
+      const score = calculateHealthScore(data);
+      const badgeEl   = document.getElementById('dash-badge');
+      const circleEl  = document.getElementById('dash-health-circle');
+      const labelEl   = document.getElementById('dash-health-label');
+      const subEl     = document.getElementById('dash-health-sub');
+
+      const RAG = {
+        green: { dot: 'bg-green-500', badge: 'bg-green-50 text-green-700 border-green-200',  circle: 'border-green-400 bg-green-50',  text: 'Green', label: 'Program is on track', sub: 'All metrics and milestones are healthy.' },
+        amber: { dot: 'bg-amber-400', badge: 'bg-amber-50 text-amber-700 border-amber-200', circle: 'border-amber-400 bg-amber-50', text: 'Amber', label: 'Some items need attention', sub: 'At-risk metrics or milestones detected.' },
+        red:   { dot: 'bg-red-500',   badge: 'bg-red-50 text-red-700 border-red-200',       circle: 'border-red-400 bg-red-50',     text: 'Red',   label: 'Program is at risk',     sub: 'Critical issues require immediate action.' },
+        none:  { dot: 'bg-gray-400',  badge: 'bg-gray-100 text-gray-500 border-gray-200',   circle: 'border-gray-200 bg-gray-100',  text: 'No Data', label: 'Awaiting program data', sub: 'Fill in the form to calculate health score.' },
+      };
+      const r = RAG[score];
+      badgeEl.className = `inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border ${r.badge}`;
+      badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full ${r.dot} inline-block"></span>${r.text}`;
+      circleEl.className = `w-14 h-14 rounded-full border-4 flex items-center justify-center flex-shrink-0 ${r.circle}`;
+      circleEl.innerHTML = `<span class="text-xs font-bold ${score === 'none' ? 'text-gray-400' : ''}">${r.text.charAt(0)}</span>`;
+      labelEl.textContent = r.label;
+      subEl.textContent   = r.sub;
+
+      // Stakeholders
+      const dashS = document.getElementById('dash-stakeholders');
+      if (data.stakeholders.length) {
+        dashS.innerHTML = data.stakeholders.map(s =>
+          `<div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+            <span class="text-sm font-medium text-gray-800">${s.name}</span>
+            <span class="text-xs text-gray-500">${s.role}</span>
+          </div>`
+        ).join('');
+      } else {
+        dashS.innerHTML = '<span class="text-sm text-gray-400 italic">No stakeholders added</span>';
+      }
+
+      // Metrics
+      const dashM = document.getElementById('dash-metrics');
+      document.getElementById('dash-metrics-count').textContent =
+        data.metrics.length ? `${data.metrics.length} metric${data.metrics.length !== 1 ? 's' : ''} tracked` : '0 metrics tracked';
+      if (data.metrics.length) {
+        dashM.innerHTML = `
+          <div class="grid grid-cols-4 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+            <span class="col-span-2">Metric</span><span class="text-right">Current</span><span class="text-right">Target</span>
+          </div>
+          ${data.metrics.map(m => `
+            <div class="grid grid-cols-4 gap-3 py-3 items-center border-b border-gray-50 last:border-0">
+              <span class="col-span-2 text-sm text-gray-800 font-medium flex items-center gap-2">
+                ${m.name}
+                ${chip(METRIC_LABEL[m.status] || m.status, METRIC_CHIP[m.status] || 'bg-gray-100 text-gray-500')}
+              </span>
+              <span class="text-sm text-right text-gray-700 font-medium">${m.current || '—'}</span>
+              <span class="text-sm text-right text-gray-400">${m.target || '—'}</span>
+            </div>
+          `).join('')}`;
+      } else {
+        dashM.innerHTML = `
+          <div class="grid grid-cols-4 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+            <span class="col-span-2">Metric</span><span class="text-right">Current</span><span class="text-right">Target</span>
+          </div>
+          <div class="py-3"><span class="text-sm text-gray-400 italic">No metrics added</span></div>`;
+      }
+
+      // Milestones
+      const total    = data.milestones.length;
+      const complete = data.milestones.filter(m => m.status === 'complete').length;
+      const pct      = total ? Math.round((complete / total) * 100) : 0;
+      document.getElementById('dash-milestones-count').textContent =
+        total ? `${complete} of ${total} complete` : '0 of 0 complete';
+      document.getElementById('dash-milestones-bar').style.width = `${pct}%`;
+
+      const dashMS = document.getElementById('dash-milestones');
+      if (total) {
+        dashMS.innerHTML = data.milestones.map(m => {
+          const due = m.dueDate ? new Date(m.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
+          return `<div class="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
+            <div>
+              <span class="text-sm text-gray-800">${m.name}</span>
+              ${m.owner ? `<span class="text-xs text-gray-400 ml-2">· ${m.owner}</span>` : ''}
+            </div>
+            <div class="flex items-center gap-2 flex-shrink-0">
+              ${due ? `<span class="text-xs text-gray-400">${due}</span>` : ''}
+              ${chip(MILESTONE_LABEL[m.status] || m.status, MILESTONE_CHIP[m.status] || 'bg-gray-100 text-gray-500')}
+            </div>
+          </div>`;
+        }).join('');
+      } else {
+        dashMS.innerHTML = '<span class="text-sm text-gray-400 italic">No milestones added</span>';
+      }
+
+      // Blockers — grouped: critical first, then medium, then low
+      const dashB = document.getElementById('dash-blockers');
+      if (data.blockers.length) {
+        const order = ['critical', 'medium', 'low'];
+        const groups = order.map(sev => data.blockers.filter(b => b.severity === sev));
+        dashB.innerHTML = groups.flat().map(b => {
+          const isCritical = b.severity === 'critical';
+          return `<div class="rounded-md p-3 ${isCritical ? 'bg-red-50 border border-red-100' : 'bg-gray-50 border border-gray-100'}">
+            <div class="flex items-start justify-between gap-2">
+              <p class="text-sm text-gray-800 flex-1">${b.description}</p>
+              ${chip(b.severity.charAt(0).toUpperCase() + b.severity.slice(1), BLOCKER_SEVERITY_CHIP[b.severity] || '')}
+            </div>
+            ${b.owner ? `<p class="text-xs text-gray-400 mt-1">Owner: ${b.owner}</p>` : ''}
+          </div>`;
+        }).join('');
+      } else {
+        dashB.innerHTML = '<span class="text-sm text-gray-400 italic">No blockers added</span>';
+      }
+    }
+
+    // ── Save to localStorage ──────────────────────────────────────────────────
+    function saveProgram() {
+      const data = readFormData();
+      localStorage.setItem('programPulse_data', JSON.stringify(data));
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('save-timestamp').textContent = `Last saved: ${now}`;
+      updateDashboard(data);
+    }
+
+    // ── Populate form from saved data ─────────────────────────────────────────
+    function populateForm(data) {
+      document.getElementById('field-name').value = data.name || '';
+      document.getElementById('field-owner').value = data.owner || '';
+      document.getElementById('field-phase').value = data.phase || '';
+      document.getElementById('field-description').value = data.description || '';
+      document.getElementById('field-decisions').value = data.decisionsNeeded || '';
+      document.getElementById('field-risks').value = data.openRisks || '';
+
+      document.getElementById('stakeholders-list').innerHTML = '';
+      (data.stakeholders || []).forEach(s => addStakeholderRow(s.name, s.role));
+      if (!data.stakeholders?.length) addStakeholderRow();
+
+      document.getElementById('metrics-list').innerHTML = '';
+      (data.metrics || []).forEach(m => addMetricRow(m.name, m.current, m.target, m.status));
+      if (!data.metrics?.length) addMetricRow();
+
+      document.getElementById('milestones-list').innerHTML = '';
+      (data.milestones || []).forEach(m => addMilestoneRow(m.name, m.dueDate, m.owner, m.status));
+      if (!data.milestones?.length) addMilestoneRow();
+
+      document.getElementById('blockers-list').innerHTML = '';
+      (data.blockers || []).forEach(b => addBlockerRow(b.description, b.severity, b.owner));
+      if (!data.blockers?.length) addBlockerRow();
+    }
+
+    // ── Load from localStorage on page load ───────────────────────────────────
+    function loadProgram() {
+      const saved = localStorage.getItem('programPulse_data');
+      if (saved) {
+        try {
+          const data = JSON.parse(saved);
+          populateForm(data);
+          updateDashboard(data);
+          document.getElementById('save-timestamp').textContent = 'Last saved: restored from storage';
+          return;
+        } catch (e) {
+          console.warn('Failed to parse saved data', e);
+        }
+      }
+      // No saved data — start with one blank row per repeating section
+      addStakeholderRow();
+      addMetricRow();
+      addMilestoneRow();
+      addBlockerRow();
+      updateDashboard(readFormData());
+    }
+
+    // ── Init ──────────────────────────────────────────────────────────────────
+    loadProgram();
+  </script>
+
+</body>
+</html>
