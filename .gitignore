@@ -1,0 +1,15 @@
+# --- NEVER COMMIT SECRETS ---
+.env
+.env.local
+.env.*.local
+*.env
+secrets.js
+api-key.txt
+config.local.js
+
+# OS / editor clutter
+.DS_Store
+Thumbs.db
+.vscode/
+*.suo
+*.user

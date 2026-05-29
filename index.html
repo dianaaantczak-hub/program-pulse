@@ -284,25 +284,25 @@
         <div class="bg-white rounded-lg border border-gray-200 p-5">
           <h2 class="text-sm font-semibold text-gray-700 mb-4">Generate Outputs</h2>
           <div class="grid grid-cols-2 gap-3">
-            <button class="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-4 rounded-md text-sm transition-colors col-span-2">
+            <button onclick="handleAnalyze()" class="flex items-center justify-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-medium py-2.5 px-4 rounded-md text-sm transition-colors col-span-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
               </svg>
               Analyze with AI
             </button>
-            <button class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors">
+            <button onclick="handleExecBrief()" class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
               Exec Brief
             </button>
-            <button class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors">
+            <button onclick="handleProgramReport()" class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
               Program Report
             </button>
-            <button class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors col-span-2">
+            <button onclick="handleStatusUpdate()" class="flex items-center justify-center gap-2 border border-gray-200 hover:bg-gray-50 text-gray-700 font-medium py-2.5 px-4 rounded-md text-sm transition-colors col-span-2">
               <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
               </svg>
@@ -314,6 +314,39 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- Output Modal -->
+  <div id="output-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
+    <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h3 id="modal-title" class="text-base font-semibold text-gray-900"></h3>
+        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="overflow-y-auto flex-1 px-6 py-4">
+        <pre id="modal-body" class="text-sm text-gray-700 whitespace-pre-wrap font-mono leading-relaxed"></pre>
+      </div>
+      <div class="flex items-center gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-xl">
+        <button onclick="copyModalContent()" class="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-md px-4 py-2 hover:bg-white transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+          </svg>
+          <span id="copy-btn-label">Copy to clipboard</span>
+        </button>
+        <button onclick="downloadModalContent()" class="flex items-center gap-2 text-sm font-medium text-gray-700 border border-gray-200 rounded-md px-4 py-2 hover:bg-white transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download .txt
+        </button>
+        <button onclick="closeModal()" class="ml-auto text-sm font-medium text-blue-500 hover:text-blue-600 transition-colors">Close</button>
+      </div>
+    </div>
   </div>
 
   <script>
@@ -733,8 +766,525 @@
       updateDashboard(readFormData());
     }
 
+    // ── IMPORTANT: Never hardcode your API key here. ──────────────────────────
+    // The API key is entered by the user in the Settings panel and stored only
+    // in their own browser's localStorage. It is never committed to git.
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // ── Active demo state ─────────────────────────────────────────────────────
+    // Tracks which demo preset is loaded so AI buttons use static responses.
+    let activeDemo = null;
+    let modalCurrentTitle = '';
+    let modalCurrentContent = '';
+
+    // ── Demo program data ─────────────────────────────────────────────────────
+    const DEMO_DATA = {
+      green: {
+        name: 'Horizon Product Launch',
+        owner: 'Sarah Chen',
+        phase: 'Q2 Execution',
+        description: 'Cross-functional launch of Horizon, the company\'s next-generation analytics platform targeting enterprise customers in North America. Includes go-to-market readiness, sales enablement, and customer onboarding.',
+        stakeholders: [
+          { name: 'Sarah Chen',   role: 'Program Lead' },
+          { name: 'Marcus Reid',  role: 'Engineering' },
+          { name: 'Priya Patel',  role: 'Marketing' },
+          { name: 'Jordan Lee',   role: 'Sales Enablement' },
+          { name: 'Tom Wu',       role: 'Customer Success' },
+        ],
+        metrics: [
+          { name: 'Sales Pipeline Created',  current: '$2.8M', target: '$2.5M', status: 'on-track' },
+          { name: 'Beta Customers Onboarded', current: '12',    target: '10',    status: 'on-track' },
+          { name: 'Launch Readiness Score',   current: '94%',   target: '90%',   status: 'on-track' },
+        ],
+        milestones: [
+          { name: 'Product Feature Freeze',     dueDate: '2026-04-30', owner: 'Sarah Chen',  status: 'complete' },
+          { name: 'Beta Program Close',          dueDate: '2026-05-15', owner: 'Marcus Reid', status: 'complete' },
+          { name: 'Sales Training Complete',     dueDate: '2026-05-22', owner: 'Jordan Lee',  status: 'complete' },
+          { name: 'Marketing Assets Finalized',  dueDate: '2026-05-28', owner: 'Priya Patel', status: 'in-progress' },
+          { name: 'Public Launch',               dueDate: '2026-06-15', owner: 'Sarah Chen',  status: 'not-started' },
+        ],
+        blockers: [
+          { description: 'Final legal review of licensing terms still pending.', severity: 'low', owner: 'Tom Wu' },
+        ],
+        decisionsNeeded: 'Confirm pricing tier structure for mid-market segment before launch.',
+        openRisks: 'Regional event scheduling conflicts may impact launch-day press coverage.',
+      },
+
+      amber: {
+        name: 'Cloud Platform Migration',
+        owner: 'Marcus Reid',
+        phase: 'Migration Phase 2',
+        description: 'Migration of core infrastructure from on-premise data centers to AWS. Phase 2 covers production workloads for the payments and identity services. Target completion end of Q2.',
+        stakeholders: [
+          { name: 'Marcus Reid', role: 'Engineering Lead' },
+          { name: 'Dana Osei',   role: 'Security' },
+          { name: 'Kevin Park',  role: 'DevOps' },
+          { name: 'Lisa Torres', role: 'Product' },
+        ],
+        metrics: [
+          { name: 'Services Migrated',                   current: '18',  target: '24',  status: 'at-risk' },
+          { name: 'Test Coverage on Migrated Services',  current: '76%', target: '85%', status: 'at-risk' },
+          { name: 'Cost per Service (Migration)',         current: '$4,200', target: '$3,800', status: 'on-track' },
+        ],
+        milestones: [
+          { name: 'Identity Service Migration',       dueDate: '2026-05-10', owner: 'Kevin Park',  status: 'complete' },
+          { name: 'Payments Service Migration',       dueDate: '2026-05-31', owner: 'Marcus Reid', status: 'at-risk' },
+          { name: 'Security Audit of Migrated Services', dueDate: '2026-06-07', owner: 'Dana Osei', status: 'not-started' },
+          { name: 'Cutover to AWS Production',        dueDate: '2026-06-20', owner: 'Marcus Reid', status: 'not-started' },
+        ],
+        blockers: [
+          { description: 'Payments service has undocumented legacy dependencies blocking migration completion.', severity: 'medium', owner: 'Kevin Park' },
+        ],
+        decisionsNeeded: 'Delay cutover by 2 weeks (to July 4) or accept technical debt and migrate with known gaps.',
+        openRisks: 'AWS region failover has not been tested under production load. Rollback plan needs validation before cutover date.',
+      },
+
+      red: {
+        name: 'NYC Office Expansion',
+        owner: 'Jordan Lee',
+        phase: 'Buildout & Permitting',
+        description: 'Expansion of New York City office from 8,000 to 22,000 sq ft to accommodate headcount growth in Sales and Customer Success. Lease signed, design complete, construction underway.',
+        stakeholders: [
+          { name: 'Jordan Lee',    role: 'Program Lead' },
+          { name: 'Rachel Kim',    role: 'Facilities' },
+          { name: 'David Santos',  role: 'Finance' },
+          { name: 'Nia Brown',     role: 'HR' },
+          { name: 'Chris Malone',  role: 'Construction PM' },
+        ],
+        metrics: [
+          { name: 'Budget Utilization',                   current: '$2.1M', target: '$1.8M', status: 'off-track' },
+          { name: 'Permitting Milestones Hit',             current: '2',     target: '4',     status: 'off-track' },
+          { name: 'Contractor Deliverables On Schedule',   current: '55%',   target: '90%',   status: 'off-track' },
+        ],
+        milestones: [
+          { name: 'Lease Executed',              dueDate: '2026-03-01', owner: 'Jordan Lee',   status: 'complete' },
+          { name: 'Design Finalized',            dueDate: '2026-03-28', owner: 'Rachel Kim',   status: 'complete' },
+          { name: 'Permits Received',            dueDate: '2026-04-15', owner: 'Chris Malone', status: 'at-risk' },
+          { name: 'Construction Phase 1 Complete', dueDate: '2026-05-30', owner: 'Chris Malone', status: 'at-risk' },
+          { name: 'IT Infrastructure Installed', dueDate: '2026-06-15', owner: 'David Santos', status: 'not-started' },
+          { name: 'Employee Move-In',            dueDate: '2026-07-01', owner: 'Jordan Lee',   status: 'not-started' },
+        ],
+        blockers: [
+          { description: 'NYC DOB permit approval delayed — structural amendment required before construction can continue.', severity: 'critical', owner: 'Chris Malone' },
+        ],
+        decisionsNeeded: 'File permit amendment (8-week delay, lower cost) vs. redesign structural element (4-week delay, higher cost). Decision needed immediately.',
+        openRisks: 'July 1 move-in delay will force remote onboarding for 40+ new hires, impacting ramp time and increasing onboarding costs.',
+      },
+    };
+
+    // ── Static AI responses per demo ──────────────────────────────────────────
+    // These are pre-written so the demo works without a live API key.
+    const DEMO_AI = {
+      green: {
+        analyze: `HEALTH EXPLANATION
+Horizon Product Launch is tracking well across all monitored dimensions. All three KPIs are at or above target, three of five milestones are complete, and there are no critical or medium-severity blockers. The program is in a strong position heading into the final stretch before the June 15 launch.
+
+TOP 3 RISKS (by impact)
+1. Marketing assets not yet finalized — with 18 days to launch, any delay compresses the pre-launch sales enablement window.
+2. Pricing tier structure for mid-market not yet confirmed — a late decision could require last-minute sales training updates.
+3. Press coverage dependency on regional event scheduling — low probability, but worth monitoring as launch date approaches.
+
+RECOMMENDED NEXT ACTION
+Schedule a launch readiness review for the week of June 2 to confirm all workstreams are closed. Prioritize the pricing tier decision so sales can finalize talk tracks before launch.
+
+ESCALATION FLAG: No — Program is on track. No executive escalation required at this time.`,
+
+        execBrief: `PROGRAM: Horizon Product Launch
+PHASE: Q2 Execution
+STATUS: GREEN — All KPIs on target, launch on track for June 15
+AS OF: May 29, 2026
+
+SITUATION
+Horizon Product Launch is in the final execution phase with 18 days to public launch. All three KPIs are at or above target, three of five milestones are complete, and marketing assets are the only workstream still in progress. The program has no critical or medium blockers and is well-positioned for an on-schedule launch.
+
+GOALS & METRICS
+- Sales Pipeline Created: $2.8M vs. target $2.5M — On Track
+- Beta Customers Onboarded: 12 vs. target 10 — On Track
+- Launch Readiness Score: 94% vs. target 90% — On Track
+
+KEY DECISIONS NEEDED
+- Confirm pricing tier structure for mid-market segment before launch
+
+TOP RISKS
+- Marketing assets not finalized — compresses pre-launch sales enablement window if delayed
+- Late pricing decision could require last-minute sales training updates
+- Regional event conflicts may affect press coverage on launch day
+
+RECOMMENDED NEXT STEPS
+1. Schedule launch readiness review for the week of June 2
+2. Resolve mid-market pricing tier decision by June 1 to enable sales talk track finalization
+3. Confirm press and event calendar for June 15 launch window`,
+
+        programReport: `PROGRAM HEALTH REPORT
+Horizon Product Launch
+Generated: May 29, 2026
+Status: GREEN
+
+PROGRAM OVERVIEW
+Horizon Product Launch is a cross-functional initiative to bring the company's next-generation analytics platform to enterprise customers in North America. The program entered Q2 Execution phase with all foundational workstreams on or ahead of plan. With 18 days to the June 15 launch date, the program remains firmly on track.
+
+The team has successfully closed the beta program with 12 enrolled customers (target: 10), built $2.8M in sales pipeline (target: $2.5M), and achieved a launch readiness score of 94% (target: 90%). Marketing asset finalization is the only remaining active workstream.
+
+METRICS
+Metric                        Current   Target    Status
+-----------------------------------------------------------
+Sales Pipeline Created        $2.8M     $2.5M     On Track
+Beta Customers Onboarded      12        10        On Track
+Launch Readiness Score        94%       90%       On Track
+
+MILESTONE STATUS
+Milestone                     Due Date   Owner         Status
+--------------------------------------------------------------
+Product Feature Freeze        Apr 30     Sarah Chen    Complete
+Beta Program Close            May 15     Marcus Reid   Complete
+Sales Training Complete       May 22     Jordan Lee    Complete
+Marketing Assets Finalized    May 28     Priya Patel   In Progress
+Public Launch                 Jun 15     Sarah Chen    Not Started
+
+BLOCKERS & RISKS
+Active Blockers: 1 (Low severity)
+- Final legal review of licensing terms pending (Owner: Tom Wu) — does not impact launch timeline
+
+Open Risks:
+- Regional event scheduling conflicts may impact launch-day press coverage.
+  Contingency: pre-schedule backup media outreach for launch week.
+
+DECISIONS LOG
+- PENDING: Mid-market pricing tier structure — must be resolved by June 1.
+
+STAKEHOLDERS
+- Sarah Chen, Program Lead
+- Marcus Reid, Engineering
+- Priya Patel, Marketing
+- Jordan Lee, Sales Enablement
+- Tom Wu, Customer Success
+
+RECOMMENDED ACTIONS
+1. Finalize marketing assets by May 30
+2. Resolve mid-market pricing decision by June 1
+3. Conduct launch readiness review week of June 2
+4. Confirm media and event calendar for launch day`,
+
+        statusUpdate: `Horizon Product Launch — Week of May 26, 2026
+Phase: Q2 Execution | Owner: Sarah Chen
+Status: 🟢 Green
+
+This week: Completed sales training and closed beta program with 12 customers (above 10 target). Pipeline at $2.8M, ahead of $2.5M goal.
+Next week: Finalize marketing assets, complete launch readiness review, confirm mid-market pricing tier.
+Metrics: Pipeline $2.8M/$2.5M ✓ | Beta customers 12/10 ✓ | Readiness 94%/90% ✓
+Blockers: None active.
+Decisions needed: Mid-market pricing tier structure — needed by June 1.`,
+      },
+
+      amber: {
+        analyze: `HEALTH EXPLANATION
+Cloud Platform Migration is at risk of missing its June 20 cutover date. Two of three KPIs are at risk — only 18 of 24 services have been migrated with one month remaining, and test coverage is below the 85% threshold at 76%. The payments service migration is on the critical path and is currently stalled due to undocumented legacy dependencies.
+
+TOP 3 RISKS (by impact)
+1. Payments service migration delay — this is the critical path item. A slip here cascades to the security audit and the June 20 cutover.
+2. Test coverage gap (76% vs. 85% target) — migrating with insufficient coverage increases the probability of production incidents post-cutover.
+3. No validated rollback plan — if cutover encounters issues, the team has no tested path to revert, creating potential for extended outage.
+
+RECOMMENDED NEXT ACTION
+Complete a dependency audit on the payments service immediately to scope the work and set a realistic revised date. Do not proceed to production cutover without resolving test coverage or formally accepting the risk with engineering leadership.
+
+ESCALATION FLAG: Yes — Recommend escalating to engineering leadership this week. The cutover date decision needs to be made by May 31 to preserve options.`,
+
+        execBrief: `PROGRAM: Cloud Platform Migration
+PHASE: Migration Phase 2
+STATUS: AMBER — Payments service migration at risk; cutover date in jeopardy
+AS OF: May 29, 2026
+
+SITUATION
+The Cloud Platform Migration is progressing but has entered an at-risk state in Phase 2. Identity service migration is complete, but the payments service — the most complex workstream — has stalled due to undocumented legacy dependencies. With 18 of 24 target services migrated and test coverage at 76% against an 85% threshold, the June 20 production cutover is at risk of slipping by two or more weeks.
+
+GOALS & METRICS
+- Services Migrated: 18 vs. target 24 — At Risk
+- Test Coverage on Migrated Services: 76% vs. target 85% — At Risk
+- Cost per Service (Migration): $4,200 vs. target $3,800 — On Track
+
+KEY DECISIONS NEEDED
+- Delay cutover by 2 weeks (to July 4) or accept technical debt and migrate with known gaps
+
+TOP RISKS
+- Payments service legacy dependencies block migration on current timeline
+- Test coverage below threshold increases post-cutover incident probability
+- Rollback plan not validated under production load
+
+RECOMMENDED NEXT STEPS
+1. Complete dependency audit on payments service by June 2
+2. Make cutover date decision by May 31 — requires engineering, product, and finance alignment
+3. Begin rollback plan validation in parallel regardless of cutover decision`,
+
+        programReport: `PROGRAM HEALTH REPORT
+Cloud Platform Migration
+Generated: May 29, 2026
+Status: AMBER
+
+PROGRAM OVERVIEW
+The Cloud Platform Migration is a strategic infrastructure initiative to move core production workloads from on-premise data centers to AWS. Phase 1 (non-production and low-criticality services) completed on schedule. Phase 2, covering payments and identity, is now underway with a target production cutover of June 20.
+
+The identity service migration completed successfully. However, the payments service — the highest-complexity and highest-risk workstream — has encountered undocumented legacy dependencies that are blocking migration progress. Combined with test coverage below threshold, the program has entered an amber state with the June 20 cutover date at risk.
+
+METRICS
+Metric                                  Current    Target    Status
+--------------------------------------------------------------------
+Services Migrated                       18         24        At Risk
+Test Coverage on Migrated Services      76%        85%       At Risk
+Cost per Service (Migration)            $4,200     $3,800    On Track
+
+MILESTONE STATUS
+Milestone                           Due Date   Owner          Status
+---------------------------------------------------------------------
+Identity Service Migration          May 10     Kevin Park     Complete
+Payments Service Migration          May 31     Marcus Reid    At Risk
+Security Audit of Migrated Services Jun 07     Dana Osei      Not Started
+Cutover to AWS Production           Jun 20     Marcus Reid    Not Started
+
+BLOCKERS & RISKS
+Active Blockers: 1 (Medium severity)
+- Payments service has undocumented legacy dependencies blocking migration
+  completion. (Owner: Kevin Park)
+
+Open Risks:
+- AWS region failover has not been tested under production load.
+- Rollback plan requires validation before any production cutover attempt.
+
+DECISIONS LOG
+- PENDING: Delay cutover by 2 weeks vs. migrate with known technical debt.
+  Decision required by May 31. Stakeholders: Marcus Reid, Lisa Torres, Finance.
+
+STAKEHOLDERS
+- Marcus Reid, Engineering Lead
+- Dana Osei, Security
+- Kevin Park, DevOps
+- Lisa Torres, Product
+
+RECOMMENDED ACTIONS
+1. Complete payments service dependency audit by June 2
+2. Make cutover date decision by May 31
+3. Begin rollback plan validation in parallel
+4. Increase test coverage on already-migrated services to hit 85% threshold`,
+
+        statusUpdate: `Cloud Platform Migration — Week of May 26, 2026
+Phase: Migration Phase 2 | Owner: Marcus Reid
+Status: 🟡 Amber
+
+This week: Confirmed 18/24 services migrated. Identified undocumented legacy dependencies in payments service blocking completion.
+Next week: Payments service dependency audit, cutover date decision, continue migrating remaining non-payments services.
+Metrics: Services migrated 18/24 ⚠️ | Test coverage 76%/85% ⚠️ | Migration cost on track
+Blockers: Payments service legacy dependencies — medium severity, owner Kevin Park.
+Decisions needed: Delay cutover 2 weeks vs. migrate with known gaps — decision required by May 31.`,
+      },
+
+      red: {
+        analyze: `HEALTH EXPLANATION
+NYC Office Expansion is in a critical state. All three KPIs are off-track: the program is $300K over budget, only 2 of 4 permitting milestones have been hit, and contractor delivery is at 55% against a 90% target. A critical blocker — NYC DOB permit approval delayed due to a required structural amendment — is stalling construction and threatening the July 1 employee move-in date, which is tied to 40+ new hire onboardings.
+
+TOP 3 RISKS (by impact)
+1. July 1 move-in date is at high risk — a slip forces remote onboarding for 40+ new hires, with downstream impacts on ramp time and onboarding costs.
+2. The permit amendment vs. redesign decision has not been made — every week of indecision extends the delay and compounds budget overrun.
+3. Budget overrun of $300K with construction not yet complete — further delays will grow this number materially.
+
+RECOMMENDED NEXT ACTION
+Convene an emergency decision meeting this week with Jordan Lee, Chris Malone, and Finance to choose between the permit amendment (8-week delay) and structural redesign (4-week delay, higher cost). Immediately notify HR of probable delay so remote onboarding contingency planning can begin.
+
+ESCALATION FLAG: Yes — Immediate executive escalation required. Budget overrun, a critical permit blocker, and risk to 40+ new hire start dates all require senior leadership awareness and decision authority.`,
+
+        execBrief: `PROGRAM: NYC Office Expansion
+PHASE: Buildout & Permitting
+STATUS: RED — Critical permit blocker; move-in date at risk; program over budget
+AS OF: May 29, 2026
+
+SITUATION
+The NYC Office Expansion is in a critical state following a NYC Department of Buildings permit rejection requiring a structural amendment. Construction has effectively stalled on Phase 1. All three KPIs are off-track, the program is $300K over the approved budget, and the July 1 employee move-in date — tied to 40+ new hire onboardings — is at high risk of slipping by 4–8 weeks pending a structural decision.
+
+GOALS & METRICS
+- Budget Utilization: $2.1M vs. target $1.8M — Off Track (17% over budget)
+- Permitting Milestones Hit: 2 vs. target 4 — Off Track
+- Contractor Deliverables On Schedule: 55% vs. target 90% — Off Track
+
+KEY DECISIONS NEEDED
+- File permit amendment (8-week delay) vs. redesign structural element (4-week delay, higher cost) — decision required immediately
+
+TOP RISKS
+- July 1 move-in miss forces remote onboarding for 40+ new hires
+- Budget overrun will grow with each week of construction delay
+- Contractor schedule slippage compounds if permit delay extends past 2 weeks
+
+RECOMMENDED NEXT STEPS
+1. Convene emergency decision meeting this week — Jordan Lee, Chris Malone, Finance, Legal
+2. Notify HR immediately to plan remote onboarding contingency for July new hires
+3. Freeze discretionary construction spend pending permit resolution
+4. Request revised budget and timeline from Chris Malone once decision is made`,
+
+        programReport: `PROGRAM HEALTH REPORT
+NYC Office Expansion
+Generated: May 29, 2026
+Status: RED — Immediate action required
+
+PROGRAM OVERVIEW
+The NYC Office Expansion is a facilities initiative to grow the New York City office from 8,000 to 22,000 square feet to support headcount growth in Sales and Customer Success. The lease is signed and design is complete. Construction began in April but has stalled due to a critical permit rejection by the NYC Department of Buildings, which requires a structural amendment before work can resume.
+
+The program is now off-track on all three KPIs, is $300K over the approved budget, and faces a high-probability delay to the July 1 employee move-in date. An unresolved decision on the path forward (permit amendment vs. structural redesign) is the primary blocker to any recovery plan.
+
+METRICS
+Metric                                    Current   Target   Status
+--------------------------------------------------------------------
+Budget Utilization                        $2.1M     $1.8M    Off Track
+Permitting Milestones Hit                 2         4        Off Track
+Contractor Deliverables On Schedule       55%       90%      Off Track
+
+MILESTONE STATUS
+Milestone                      Due Date   Owner          Status
+---------------------------------------------------------------
+Lease Executed                 Mar 01     Jordan Lee     Complete
+Design Finalized               Mar 28     Rachel Kim     Complete
+Permits Received               Apr 15     Chris Malone   At Risk
+Construction Phase 1 Complete  May 30     Chris Malone   At Risk
+IT Infrastructure Installed    Jun 15     David Santos   Not Started
+Employee Move-In               Jul 01     Jordan Lee     Not Started
+
+BLOCKERS & RISKS
+Active Blockers: 1 (CRITICAL)
+- NYC DOB permit approval delayed — structural amendment required before
+  construction can continue. (Owner: Chris Malone)
+
+Open Risks:
+- July 1 move-in delay will force remote onboarding for 40+ new hires
+  starting in July, impacting ramp time and increasing onboarding costs.
+- Each week of delay on the permit decision adds approximately $45K in
+  extended contractor and facilities holding costs.
+
+DECISIONS LOG
+- CRITICAL/PENDING: Permit amendment (8-week delay) vs. structural redesign
+  (4-week delay, higher cost). Must be decided this week.
+  Decision owners: Jordan Lee, Chris Malone, Finance, Legal.
+
+STAKEHOLDERS
+- Jordan Lee, Program Lead
+- Rachel Kim, Facilities
+- David Santos, Finance
+- Nia Brown, HR
+- Chris Malone, Construction PM
+
+RECOMMENDED ACTIONS
+1. Hold emergency decision meeting this week on amendment vs. redesign path
+2. Notify HR of probable July 1 delay — begin remote onboarding contingency planning
+3. Freeze all discretionary construction spend until permit path is resolved
+4. Request revised budget and timeline from Chris Malone post-decision
+5. Schedule weekly executive status update until program exits red`,
+
+        statusUpdate: `NYC Office Expansion — Week of May 26, 2026
+Phase: Buildout & Permitting | Owner: Jordan Lee
+Status: 🔴 Red
+
+This week: NYC DOB rejected permit application — structural amendment required. Construction on Phase 1 effectively paused. Budget now $300K over approved amount.
+Next week: Emergency decision meeting on amendment vs. redesign path. HR notification re: July 1 move-in risk. Contractor scope freeze pending permit outcome.
+Metrics: Budget $2.1M/$1.8M ❌ | Permits 2/4 ❌ | Contractor schedule 55%/90% ❌
+Blockers: NYC DOB permit approval blocked — CRITICAL — owner Chris Malone. Immediate action required.
+Decisions needed: Permit amendment (8-week delay) vs. structural redesign (4-week delay, higher cost) — must decide this week.`,
+      },
+    };
+
+    // ── Load demo preset ──────────────────────────────────────────────────────
+    // Populates the form and dashboard with pre-built demo data.
+    function loadDemoPreset(key) {
+      if (!key) return;
+      const data = DEMO_DATA[key];
+      if (!data) return;
+      activeDemo = key;
+      populateForm(data);
+      updateDashboard(data);
+      document.getElementById('save-timestamp').textContent = `Demo loaded: ${data.name}`;
+      // Pre-render AI analysis in the panel
+      renderAnalysisPanel(DEMO_AI[key].analyze);
+    }
+
+    // ── Render AI analysis inline in dashboard ────────────────────────────────
+    function renderAnalysisPanel(text) {
+      const el = document.getElementById('dash-ai-content');
+      el.innerHTML = `<p class="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">${text}</p>`;
+    }
+
+    // ── Modal helpers ─────────────────────────────────────────────────────────
+    function showModal(title, content) {
+      modalCurrentTitle   = title;
+      modalCurrentContent = content;
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').textContent  = content;
+      document.getElementById('copy-btn-label').textContent = 'Copy to clipboard';
+      document.getElementById('output-modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('output-modal').classList.add('hidden');
+    }
+
+    function copyModalContent() {
+      navigator.clipboard.writeText(modalCurrentContent).then(() => {
+        document.getElementById('copy-btn-label').textContent = 'Copied!';
+        setTimeout(() => {
+          document.getElementById('copy-btn-label').textContent = 'Copy to clipboard';
+        }, 2000);
+      });
+    }
+
+    function downloadModalContent() {
+      const blob = new Blob([modalCurrentContent], { type: 'text/plain' });
+      const a    = document.createElement('a');
+      a.href     = URL.createObjectURL(blob);
+      a.download = modalCurrentTitle.replace(/[^a-z0-9]/gi, '-').toLowerCase() + '.txt';
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    // ── Action button handlers ────────────────────────────────────────────────
+    // Each checks for an active demo first; live API calls come in a later step.
+    function handleAnalyze() {
+      if (activeDemo && DEMO_AI[activeDemo]) {
+        renderAnalysisPanel(DEMO_AI[activeDemo].analyze);
+      } else {
+        renderAnalysisPanel('No API key configured. Load a demo preset to see AI analysis, or add your Anthropic API key in Settings.');
+      }
+    }
+
+    function handleExecBrief() {
+      if (activeDemo && DEMO_AI[activeDemo]) {
+        showModal('Executive Brief', DEMO_AI[activeDemo].execBrief);
+      } else {
+        showModal('Executive Brief', 'No API key configured. Load a demo preset to see a sample brief, or add your Anthropic API key in Settings.');
+      }
+    }
+
+    function handleProgramReport() {
+      if (activeDemo && DEMO_AI[activeDemo]) {
+        showModal('Program Report', DEMO_AI[activeDemo].programReport);
+      } else {
+        showModal('Program Report', 'No API key configured. Load a demo preset to see a sample report, or add your Anthropic API key in Settings.');
+      }
+    }
+
+    function handleStatusUpdate() {
+      if (activeDemo && DEMO_AI[activeDemo]) {
+        showModal('Status Update', DEMO_AI[activeDemo].statusUpdate);
+      } else {
+        showModal('Status Update', 'No API key configured. Load a demo preset to see a sample update, or add your Anthropic API key in Settings.');
+      }
+    }
+
     // ── Init ──────────────────────────────────────────────────────────────────
     loadProgram();
+
+    // Wire demo dropdown
+    document.getElementById('demo-select').addEventListener('change', (e) => {
+      if (e.target.value) loadDemoPreset(e.target.value);
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
   </script>
 
 </body>
