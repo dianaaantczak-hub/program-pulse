@@ -68,8 +68,3 @@ The entire app is a single `index.html` file. Open it in a browser and it runs.
 
 ---
 
-## About
-
-Built by **Diana Antczak** as a portfolio project demonstrating AI integration, program management tooling, and product thinking.
-
-Built with [Claude Code](https://claude.ai/claude-code) · Powered by [Anthropic](https://anthropic.com)
