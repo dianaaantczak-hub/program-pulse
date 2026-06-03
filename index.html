@@ -37,7 +37,7 @@
       <select id="demo-select" class="text-sm border border-gray-200 rounded-md px-3 py-1.5 text-gray-600 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         <option value="">Load Demo...</option>
         <option value="green">Green — Product Launch (Healthy)</option>
-        <option value="amber">Amber — Platform Migration (At Risk)</option>
+        <option value="amber">Amber — OLYSENSE AI Module (At Risk)</option>
         <option value="red">Red — Office Expansion (Critical)</option>
       </select>
       <button class="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
@@ -75,6 +75,14 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Program Phase</label>
               <input id="field-phase" type="text" placeholder="e.g. Q2 Execution"
+                class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">
+                Regulatory Framework
+                <span class="text-gray-400 font-normal ml-1">(optional)</span>
+              </label>
+              <input id="field-regulatory" type="text" placeholder="e.g. ISO 13485:2016 / 21 CFR Part 820"
                 class="w-full border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
             </div>
             <div>
@@ -537,6 +545,7 @@
         name: document.getElementById('field-name').value.trim(),
         owner: document.getElementById('field-owner').value.trim(),
         phase: document.getElementById('field-phase').value.trim(),
+        regulatoryFramework: document.getElementById('field-regulatory').value.trim(),
         description: document.getElementById('field-description').value.trim(),
         stakeholders,
         metrics,
@@ -723,6 +732,7 @@
       document.getElementById('field-name').value = data.name || '';
       document.getElementById('field-owner').value = data.owner || '';
       document.getElementById('field-phase').value = data.phase || '';
+      document.getElementById('field-regulatory').value = data.regulatoryFramework || '';
       document.getElementById('field-description').value = data.description || '';
       document.getElementById('field-decisions').value = data.decisionsNeeded || '';
       document.getElementById('field-risks').value = data.openRisks || '';
@@ -811,32 +821,36 @@
       },
 
       amber: {
-        name: 'Cloud Platform Migration',
-        owner: 'Marcus Reid',
-        phase: 'Migration Phase 2',
-        description: 'Migration of core infrastructure from on-premise data centers to AWS. Phase 2 covers production workloads for the payments and identity services. Target completion end of Q2.',
+        name: 'OLYSENSE AI Detection Module — V2.1',
+        owner: 'Sarah Kline',
+        phase: 'Design Verification & Validation',
+        regulatoryFramework: 'ISO 13485:2016 / 21 CFR Part 820 (QMSR)',
+        description: 'Regulatory-governed development of the V2.1 software update for the OLYSENSE AI-assisted polyp detection module. Includes algorithm improvements targeting a 15% reduction in false negative rate. Governed by ISO 13485:2016 design controls and IEC 62304 software lifecycle requirements. FDA 510(k) submission targeted for Q3 2026.',
         stakeholders: [
-          { name: 'Marcus Reid', role: 'Engineering Lead' },
-          { name: 'Dana Osei',   role: 'Security' },
-          { name: 'Kevin Park',  role: 'DevOps' },
-          { name: 'Lisa Torres', role: 'Product' },
+          { name: 'Alex Morgan',  role: 'IT / Systems Integration' },
+          { name: 'Dana Osei',    role: 'Quality & Regulatory Affairs' },
+          { name: 'Lisa Torres',  role: 'Product Management' },
+          { name: 'Kevin Park',   role: 'Engineering / R&D' },
         ],
         metrics: [
-          { name: 'Services Migrated',                   current: '18',  target: '24',  status: 'at-risk' },
-          { name: 'Test Coverage on Migrated Services',  current: '76%', target: '85%', status: 'at-risk' },
-          { name: 'Cost per Service (Migration)',         current: '$4,200', target: '$3,800', status: 'on-track' },
+          { name: 'V&V Protocol Completion',   current: '68%',   target: '85%',   status: 'at-risk' },
+          { name: 'Open CAPA Items',           current: '2',     target: '0',     status: 'at-risk' },
+          { name: 'Test Case Pass Rate',       current: '94.2%', target: '98.0%', status: 'at-risk' },
         ],
         milestones: [
-          { name: 'Identity Service Migration',       dueDate: '2026-05-10', owner: 'Kevin Park',  status: 'complete' },
-          { name: 'Payments Service Migration',       dueDate: '2026-05-31', owner: 'Marcus Reid', status: 'at-risk' },
-          { name: 'Security Audit of Migrated Services', dueDate: '2026-06-07', owner: 'Dana Osei', status: 'not-started' },
-          { name: 'Cutover to AWS Production',        dueDate: '2026-06-20', owner: 'Marcus Reid', status: 'not-started' },
+          { name: 'Design Input Review (DHF Gate 1)',          dueDate: '2026-03-15', owner: 'Dana Osei',   status: 'complete' },
+          { name: 'Software Architecture & Design Review',     dueDate: '2026-04-01', owner: 'Kevin Park',  status: 'complete' },
+          { name: 'Unit & Integration Testing Complete',       dueDate: '2026-04-30', owner: 'Kevin Park',  status: 'complete' },
+          { name: 'System Verification Testing',              dueDate: '2026-05-31', owner: 'Kevin Park',  status: 'at-risk' },
+          { name: 'Clinical Validation Study Complete',        dueDate: '2026-06-20', owner: 'Lisa Torres', status: 'not-started' },
+          { name: 'CAPA Resolution & DHF Closure Review',      dueDate: '2026-06-28', owner: 'Dana Osei',   status: 'not-started' },
+          { name: 'Regulatory Submission Package (510(k))',    dueDate: '2026-07-15', owner: 'Dana Osei',   status: 'not-started' },
         ],
         blockers: [
-          { description: 'Payments service has undocumented legacy dependencies blocking migration completion.', severity: 'medium', owner: 'Kevin Park' },
+          { description: 'Two open CAPAs from System Verification: algorithm underperforms in low-contrast imaging scenarios. Resolution requires software patch and re-test cycle.', severity: 'medium', owner: 'Kevin Park' },
         ],
-        decisionsNeeded: 'Delay cutover by 2 weeks (to July 4) or accept technical debt and migrate with known gaps.',
-        openRisks: 'AWS region failover has not been tested under production load. Rollback plan needs validation before cutover date.',
+        decisionsNeeded: 'Determine whether to proceed to Clinical Validation in parallel while CAPAs resolve, or gate on V&V closure first. Decision has direct implications for 510(k) submission narrative and Q3 timeline.',
+        openRisks: 'If CAPA resolution requires a design change, a Change Control record must be opened (ISO 13485 §7.3.9), adding 3–4 weeks and potentially triggering re-verification of affected test cases. Clinical Validation site availability in June is not yet confirmed.',
       },
 
       red: {
@@ -978,103 +992,115 @@ Decisions needed: Mid-market pricing tier structure — needed by June 1.`,
 
       amber: {
         analyze: `HEALTH EXPLANATION
-Cloud Platform Migration is at risk of missing its June 20 cutover date. Two of three KPIs are at risk — only 18 of 24 services have been migrated with one month remaining, and test coverage is below the 85% threshold at 76%. The payments service migration is on the critical path and is currently stalled due to undocumented legacy dependencies.
+OLYSENSE AI Detection Module V2.1 has entered an at-risk state during the System Verification phase. All three KPIs are at risk: V&V protocol completion is at 68% against an 85% target, two CAPAs remain open from verification testing, and the test case pass rate of 94.2% is below the 98% threshold required for DHF closure. System Verification is on the critical path — it gates Clinical Validation, DHF Closure, and the Q3 510(k) submission.
 
 TOP 3 RISKS (by impact)
-1. Payments service migration delay — this is the critical path item. A slip here cascades to the security audit and the June 20 cutover.
-2. Test coverage gap (76% vs. 85% target) — migrating with insufficient coverage increases the probability of production incidents post-cutover.
-3. No validated rollback plan — if cutover encounters issues, the team has no tested path to revert, creating potential for extended outage.
+1. CAPA resolution requiring a design change — if the software patch triggers a formal Change Control record under ISO 13485 §7.3.9, re-verification of affected test cases is required, adding an estimated 3–4 weeks and putting Q3 510(k) submission at risk.
+2. Parallel-tracking Clinical Validation before V&V closure — without full verification sign-off, the 510(k) submission narrative becomes more complex and may require additional regulatory justification. Proceed only with explicit QA and RA sign-off.
+3. Clinical Validation site availability — not yet confirmed for June. A site delay cascades directly to the submission date.
 
 RECOMMENDED NEXT ACTION
-Complete a dependency audit on the payments service immediately to scope the work and set a realistic revised date. Do not proceed to production cutover without resolving test coverage or formally accepting the risk with engineering leadership.
+Convene a Quality Review Board session this week with Engineering, QA, and Regulatory Affairs to assess CAPA severity and determine whether a design change record is required. Do not default to parallel-tracking Clinical Validation without formal RA sign-off on the regulatory risk.
 
-ESCALATION FLAG: Yes — Recommend escalating to engineering leadership this week. The cutover date decision needs to be made by May 31 to preserve options.`,
+ESCALATION FLAG: Yes — Recommend escalating to Digital Health leadership. The Q3 510(k) submission timeline is at risk, and the parallel-track decision carries regulatory implications that require executive alignment.`,
 
-        execBrief: `PROGRAM: Cloud Platform Migration
-PHASE: Migration Phase 2
-STATUS: AMBER — Payments service migration at risk; cutover date in jeopardy
-AS OF: May 29, 2026
+        execBrief: `PROGRAM: OLYSENSE AI Detection Module — V2.1
+PHASE: Design Verification & Validation (ISO 13485 Design Controls)
+STATUS: AMBER — System Verification at risk; Q3 510(k) submission timeline in jeopardy
+AS OF: June 3, 2026
 
 SITUATION
-The Cloud Platform Migration is progressing but has entered an at-risk state in Phase 2. Identity service migration is complete, but the payments service — the most complex workstream — has stalled due to undocumented legacy dependencies. With 18 of 24 target services migrated and test coverage at 76% against an 85% threshold, the June 20 production cutover is at risk of slipping by two or more weeks.
+The OLYSENSE V2.1 release has entered an at-risk state during the System Verification phase. Two open CAPAs — stemming from algorithm underperformance in low-contrast imaging scenarios — are blocking V&V closure and all downstream QMS gates. With V&V protocol at 68% completion and test pass rate below the 98% DHF threshold, the July 15 regulatory submission target is at risk of slipping to Q4 if CAPAs require a design change.
 
 GOALS & METRICS
-- Services Migrated: 18 vs. target 24 — At Risk
-- Test Coverage on Migrated Services: 76% vs. target 85% — At Risk
-- Cost per Service (Migration): $4,200 vs. target $3,800 — On Track
+- V&V Protocol Completion: 68% vs. target 85% — At Risk
+- Open CAPA Items: 2 vs. target 0 — At Risk
+- Test Case Pass Rate: 94.2% vs. target 98.0% — At Risk
 
 KEY DECISIONS NEEDED
-- Delay cutover by 2 weeks (to July 4) or accept technical debt and migrate with known gaps
+- Proceed to Clinical Validation in parallel while CAPAs resolve, or gate on V&V closure first (regulatory implications for 510(k) narrative)
 
 TOP RISKS
-- Payments service legacy dependencies block migration on current timeline
-- Test coverage below threshold increases post-cutover incident probability
-- Rollback plan not validated under production load
+- CAPA resolution may require a design change record, triggering re-verification (+3–4 weeks)
+- Parallel-tracking Clinical Validation without V&V closure creates 510(k) documentation risk
+- Clinical Validation site availability in June not yet confirmed
 
 RECOMMENDED NEXT STEPS
-1. Complete dependency audit on payments service by June 2
-2. Make cutover date decision by May 31 — requires engineering, product, and finance alignment
-3. Begin rollback plan validation in parallel regardless of cutover decision`,
+1. Convene Quality Review Board this week — Engineering, QA, Regulatory Affairs
+2. Assess CAPA severity and determine whether Change Control record is required
+3. Make parallel-track decision with explicit RA sign-off — do not default to parallel
+4. Confirm Clinical Validation site availability by June 10`,
 
         programReport: `PROGRAM HEALTH REPORT
-Cloud Platform Migration
-Generated: May 29, 2026
+OLYSENSE AI Detection Module — V2.1
+Generated: June 3, 2026
+Regulatory Framework: ISO 13485:2016 / 21 CFR Part 820 (QMSR)
 Status: AMBER
 
 PROGRAM OVERVIEW
-The Cloud Platform Migration is a strategic infrastructure initiative to move core production workloads from on-premise data centers to AWS. Phase 1 (non-production and low-criticality services) completed on schedule. Phase 2, covering payments and identity, is now underway with a target production cutover of June 20.
+The OLYSENSE V2.1 release is a regulated software update to Olympus's AI-assisted polyp detection module, targeting a 15% reduction in the false negative rate through algorithm improvements. Development follows ISO 13485:2016 design controls and IEC 62304 software lifecycle requirements. The program targets a Q3 2026 FDA 510(k) submission.
 
-The identity service migration completed successfully. However, the payments service — the highest-complexity and highest-risk workstream — has encountered undocumented legacy dependencies that are blocking migration progress. Combined with test coverage below threshold, the program has entered an amber state with the June 20 cutover date at risk.
+The first three design control gates — Design Input Review, Architecture Review, and Unit/Integration Testing — were completed on schedule. The program entered an at-risk state during System Verification when two CAPAs were raised against algorithm performance in low-contrast imaging scenarios. These CAPAs are blocking DHF closure and gating all downstream milestones including Clinical Validation and the regulatory submission package.
 
 METRICS
-Metric                                  Current    Target    Status
---------------------------------------------------------------------
-Services Migrated                       18         24        At Risk
-Test Coverage on Migrated Services      76%        85%       At Risk
-Cost per Service (Migration)            $4,200     $3,800    On Track
+Metric                        Current    Target    Status
+----------------------------------------------------------
+V&V Protocol Completion       68%        85%       At Risk
+Open CAPA Items               2          0         At Risk
+Test Case Pass Rate           94.2%      98.0%     At Risk
 
-MILESTONE STATUS
-Milestone                           Due Date   Owner          Status
----------------------------------------------------------------------
-Identity Service Migration          May 10     Kevin Park     Complete
-Payments Service Migration          May 31     Marcus Reid    At Risk
-Security Audit of Migrated Services Jun 07     Dana Osei      Not Started
-Cutover to AWS Production           Jun 20     Marcus Reid    Not Started
+MILESTONE STATUS (ISO 13485 Design Control Gates)
+Milestone                                  Due Date   Owner          Status
+---------------------------------------------------------------------------
+Design Input Review (DHF Gate 1)           Mar 15     Dana Osei      Complete
+Software Architecture & Design Review      Apr 01     Kevin Park     Complete
+Unit & Integration Testing Complete        Apr 30     Kevin Park     Complete
+System Verification Testing                May 31     Kevin Park     At Risk
+Clinical Validation Study Complete         Jun 20     Lisa Torres    Not Started
+CAPA Resolution & DHF Closure Review       Jun 28     Dana Osei      Not Started
+Regulatory Submission Package (510(k))     Jul 15     Dana Osei      Not Started
 
 BLOCKERS & RISKS
 Active Blockers: 1 (Medium severity)
-- Payments service has undocumented legacy dependencies blocking migration
-  completion. (Owner: Kevin Park)
+- Two open CAPAs from System Verification: algorithm underperforms in
+  low-contrast imaging scenarios. Software patch and re-test cycle required.
+  (Owner: Kevin Park)
 
 Open Risks:
-- AWS region failover has not been tested under production load.
-- Rollback plan requires validation before any production cutover attempt.
+- If CAPA resolution requires a design change, a Change Control record must
+  be opened per ISO 13485 §7.3.9, adding an estimated 3–4 weeks and
+  potentially requiring re-verification of affected test cases.
+- Clinical Validation site availability in June is not yet confirmed. A
+  site scheduling delay cascades directly to the 510(k) submission date.
 
 DECISIONS LOG
-- PENDING: Delay cutover by 2 weeks vs. migrate with known technical debt.
-  Decision required by May 31. Stakeholders: Marcus Reid, Lisa Torres, Finance.
+- PENDING: Proceed to Clinical Validation in parallel while CAPAs resolve,
+  or gate on V&V closure first. Regulatory Affairs sign-off required.
+  Decision owners: Sarah Kline, Dana Osei, Lisa Torres.
 
 STAKEHOLDERS
-- Marcus Reid, Engineering Lead
-- Dana Osei, Security
-- Kevin Park, DevOps
-- Lisa Torres, Product
+- Alex Morgan, IT / Systems Integration
+- Dana Osei, Quality & Regulatory Affairs
+- Lisa Torres, Product Management
+- Kevin Park, Engineering / R&D
 
 RECOMMENDED ACTIONS
-1. Complete payments service dependency audit by June 2
-2. Make cutover date decision by May 31
-3. Begin rollback plan validation in parallel
-4. Increase test coverage on already-migrated services to hit 85% threshold`,
+1. Convene Quality Review Board this week (Engineering, QA, RA)
+2. Assess CAPA severity — determine if Change Control record is required
+3. Make parallel-track decision with formal RA sign-off by June 7
+4. Confirm Clinical Validation site availability by June 10
+5. If no design change required, target V&V closure by June 14 to preserve July 15 submission`,
 
-        statusUpdate: `Cloud Platform Migration — Week of May 26, 2026
-Phase: Migration Phase 2 | Owner: Marcus Reid
+        statusUpdate: `OLYSENSE AI Detection Module V2.1 — Week of June 2, 2026
+Phase: Design Verification & Validation | Owner: Sarah Kline
+Regulatory Framework: ISO 13485:2016 / 21 CFR Part 820
 Status: 🟡 Amber
 
-This week: Confirmed 18/24 services migrated. Identified undocumented legacy dependencies in payments service blocking completion.
-Next week: Payments service dependency audit, cutover date decision, continue migrating remaining non-payments services.
-Metrics: Services migrated 18/24 ⚠️ | Test coverage 76%/85% ⚠️ | Migration cost on track
-Blockers: Payments service legacy dependencies — medium severity, owner Kevin Park.
-Decisions needed: Delay cutover 2 weeks vs. migrate with known gaps — decision required by May 31.`,
+This week: System Verification testing raised 2 CAPAs — algorithm underperforms in low-contrast imaging scenarios. V&V protocol at 68%, pass rate at 94.2% vs. 98% target. DHF closure gated.
+Next week: Quality Review Board session, CAPA severity assessment, Change Control determination, parallel-track decision with RA sign-off.
+Metrics: V&V completion 68%/85% ⚠️ | CAPAs open 2/0 ⚠️ | Test pass rate 94.2%/98% ⚠️
+Blockers: 2 open CAPAs blocking V&V closure — medium severity, owner Kevin Park.
+Decisions needed: Parallel-track Clinical Validation vs. gate on V&V closure — regulatory implications for 510(k) narrative. RA sign-off required.`,
       },
 
       red: {
