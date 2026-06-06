@@ -191,15 +191,15 @@
     <main class="flex-1 overflow-y-auto bg-gray-50">
 
       <!-- Dashboard Header -->
-      <div class="bg-white border-b border-gray-200 px-6 py-4">
-        <div class="flex items-start justify-between">
+      <div class="bg-white border-b border-gray-200 px-6 py-5">
+        <div class="flex items-center justify-between">
           <div>
-            <h1 id="dash-name" class="text-xl font-semibold text-gray-900">Program Name</h1>
-            <p id="dash-meta" class="text-sm text-gray-500 mt-0.5">Owner · Phase</p>
+            <h1 id="dash-name" class="text-2xl font-bold text-gray-900 tracking-tight">Program Name</h1>
+            <p id="dash-meta" class="text-sm text-gray-400 mt-1">Owner · Phase</p>
           </div>
-          <div class="flex items-center gap-2">
-            <span id="dash-badge" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-100 text-gray-500 border border-gray-200">
-              <span class="w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+          <div class="flex items-center">
+            <span id="dash-badge" class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-base font-bold bg-gray-100 text-gray-500 border border-gray-200 shadow-sm">
+              <span class="w-2.5 h-2.5 rounded-full bg-gray-400 inline-block"></span>
               No Data
             </span>
           </div>
@@ -241,10 +241,11 @@
             <span id="dash-metrics-count" class="text-xs text-gray-400">0 metrics tracked</span>
           </div>
           <div id="dash-metrics" class="divide-y divide-gray-100">
-            <div class="grid grid-cols-4 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <div class="grid grid-cols-5 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
               <span class="col-span-2">Metric</span>
               <span class="text-right">Current</span>
               <span class="text-right">Target</span>
+              <span class="text-right">Status</span>
             </div>
             <div class="py-3"><span class="text-sm text-gray-400 italic">No metrics added</span></div>
           </div>
@@ -713,23 +714,27 @@
         data.metrics.length ? `${data.metrics.length} metric${data.metrics.length !== 1 ? 's' : ''} tracked` : '0 metrics tracked';
       if (data.metrics.length) {
         dashM.innerHTML = `
-          <div class="grid grid-cols-4 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
-            <span class="col-span-2">Metric</span><span class="text-right">Current</span><span class="text-right">Target</span>
+          <div class="grid grid-cols-5 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+            <span class="col-span-2">Metric</span>
+            <span class="text-right">Current</span>
+            <span class="text-right">Target</span>
+            <span class="text-right">Status</span>
           </div>
           ${data.metrics.map(m => `
-            <div class="grid grid-cols-4 gap-3 py-3 items-center border-b border-gray-50 last:border-0">
-              <span class="col-span-2 text-sm text-gray-800 font-medium flex items-center gap-2">
-                ${m.name}
-                ${chip(METRIC_LABEL[m.status] || m.status, METRIC_CHIP[m.status] || 'bg-gray-100 text-gray-500')}
-              </span>
-              <span class="text-sm text-right text-gray-700 font-medium">${m.current || '—'}</span>
+            <div class="grid grid-cols-5 gap-3 py-3.5 items-center border-b border-gray-50 last:border-0">
+              <span class="col-span-2 text-sm font-semibold text-gray-800">${m.name}</span>
+              <span class="text-sm text-right font-medium text-gray-900">${m.current || '—'}</span>
               <span class="text-sm text-right text-gray-400">${m.target || '—'}</span>
+              <span class="text-right">${chip(METRIC_LABEL[m.status] || m.status, METRIC_CHIP[m.status] || 'bg-gray-100 text-gray-500')}</span>
             </div>
           `).join('')}`;
       } else {
         dashM.innerHTML = `
-          <div class="grid grid-cols-4 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
-            <span class="col-span-2">Metric</span><span class="text-right">Current</span><span class="text-right">Target</span>
+          <div class="grid grid-cols-5 gap-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100">
+            <span class="col-span-2">Metric</span>
+            <span class="text-right">Current</span>
+            <span class="text-right">Target</span>
+            <span class="text-right">Status</span>
           </div>
           <div class="py-3"><span class="text-sm text-gray-400 italic">No metrics added</span></div>`;
       }
@@ -745,14 +750,13 @@
       const dashMS = document.getElementById('dash-milestones');
       if (total) {
         dashMS.innerHTML = data.milestones.map(m => {
-          const due = m.dueDate ? new Date(m.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-          return `<div class="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
-            <div>
-              <span class="text-sm text-gray-800">${m.name}</span>
-              ${m.owner ? `<span class="text-xs text-gray-400 ml-2">· ${m.owner}</span>` : ''}
+          const due = m.dueDate ? new Date(m.dueDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+          return `<div class="flex items-center justify-between py-3.5 border-b border-gray-100 last:border-0">
+            <div class="min-w-0 pr-4">
+              <p class="text-sm font-semibold text-gray-800">${m.name}</p>
+              ${m.owner ? `<p class="text-xs text-gray-400 mt-0.5">${m.owner}${due ? ` · ${due}` : ''}</p>` : (due ? `<p class="text-xs text-gray-400 mt-0.5">${due}</p>` : '')}
             </div>
-            <div class="flex items-center gap-2 flex-shrink-0">
-              ${due ? `<span class="text-xs text-gray-400">${due}</span>` : ''}
+            <div class="flex-shrink-0">
               ${chip(MILESTONE_LABEL[m.status] || m.status, MILESTONE_CHIP[m.status] || 'bg-gray-100 text-gray-500')}
             </div>
           </div>`;
