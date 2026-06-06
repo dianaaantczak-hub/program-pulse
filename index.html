@@ -40,8 +40,13 @@
         <option value="amber">Amber — OLYSENSE AI Module (At Risk)</option>
         <option value="red">Red — Office Expansion (Critical)</option>
       </select>
-      <button class="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors">
+      <button id="settings-btn" onclick="openSettings()" class="text-sm text-gray-500 hover:text-gray-700 border border-gray-200 rounded-md px-3 py-1.5 hover:bg-gray-50 transition-colors flex items-center gap-1.5">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
         Settings
+        <span id="api-key-indicator" class="hidden w-2 h-2 rounded-full bg-green-400 inline-block"></span>
       </button>
     </div>
   </header>
@@ -322,6 +327,64 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeSettings()"></div>
+    <div class="relative bg-white rounded-xl shadow-2xl w-full max-w-md">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <h3 class="text-base font-semibold text-gray-900">Settings</h3>
+        <button onclick="closeSettings()" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="px-6 py-5 space-y-5">
+
+        <!-- API Key section -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Anthropic API Key</label>
+          <p class="text-xs text-gray-400 mb-3">Used for live AI analysis and output generation. Stored only in your browser — never sent anywhere except Anthropic's API.</p>
+          <div class="flex gap-2">
+            <input id="settings-api-key" type="password" placeholder="sk-ant-..."
+              class="flex-1 border border-gray-200 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 font-mono" />
+            <button onclick="toggleApiKeyVisibility()" id="toggle-visibility-btn"
+              class="border border-gray-200 rounded-md px-3 py-2 text-gray-500 hover:bg-gray-50 transition-colors text-xs">
+              Show
+            </button>
+          </div>
+          <div id="api-key-status" class="mt-2 text-xs"></div>
+        </div>
+
+        <!-- Get a key link -->
+        <div class="bg-blue-50 border border-blue-100 rounded-md px-4 py-3">
+          <p class="text-xs text-blue-700">
+            Don't have a key? Get one free at
+            <strong>console.anthropic.com</strong> → API Keys.
+            The free tier is enough to run this tool.
+          </p>
+        </div>
+
+        <!-- Clear data section -->
+        <div class="border-t border-gray-100 pt-4">
+          <p class="text-sm font-medium text-gray-700 mb-1">Reset Program Data</p>
+          <p class="text-xs text-gray-400 mb-3">Clears the form and removes all saved data from your browser. Demo presets are not affected.</p>
+          <button onclick="clearProgramData()"
+            class="text-sm text-red-500 hover:text-red-600 border border-red-200 hover:border-red-300 rounded-md px-4 py-2 transition-colors">
+            Clear all data
+          </button>
+        </div>
+
+      </div>
+
+      <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-xl">
+        <button onclick="closeSettings()" class="text-sm text-gray-500 hover:text-gray-700 px-4 py-2 transition-colors">Cancel</button>
+        <button onclick="saveSettings()" class="text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white rounded-md px-5 py-2 transition-colors">Save</button>
+      </div>
+    </div>
   </div>
 
   <!-- Output Modal -->
@@ -780,6 +843,81 @@
     // The API key is entered by the user in the Settings panel and stored only
     // in their own browser's localStorage. It is never committed to git.
     // ─────────────────────────────────────────────────────────────────────────
+
+    // ── Settings panel ────────────────────────────────────────────────────────
+
+    function openSettings() {
+      const saved = localStorage.getItem('programPulse_apiKey') || '';
+      document.getElementById('settings-api-key').value = saved;
+      updateApiKeyStatus(saved);
+      document.getElementById('settings-modal').classList.remove('hidden');
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-modal').classList.add('hidden');
+    }
+
+    function saveSettings() {
+      const key = document.getElementById('settings-api-key').value.trim();
+      if (key) {
+        localStorage.setItem('programPulse_apiKey', key);
+      } else {
+        localStorage.removeItem('programPulse_apiKey');
+      }
+      updateApiKeyStatus(key);
+      updateApiKeyIndicator();
+      closeSettings();
+    }
+
+    function toggleApiKeyVisibility() {
+      const input = document.getElementById('settings-api-key');
+      const btn   = document.getElementById('toggle-visibility-btn');
+      if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = 'Hide';
+      } else {
+        input.type = 'password';
+        btn.textContent = 'Show';
+      }
+    }
+
+    // Shows a green/gray dot on the Settings button based on whether a key is saved
+    function updateApiKeyIndicator() {
+      const key = localStorage.getItem('programPulse_apiKey');
+      const dot = document.getElementById('api-key-indicator');
+      if (key) {
+        dot.classList.remove('hidden');
+      } else {
+        dot.classList.add('hidden');
+      }
+    }
+
+    function updateApiKeyStatus(key) {
+      const el = document.getElementById('api-key-status');
+      if (key && key.startsWith('sk-ant-')) {
+        el.innerHTML = '<span class="text-green-600">✓ API key saved</span>';
+      } else if (key) {
+        el.innerHTML = '<span class="text-amber-600">⚠ Key format looks unexpected — double-check it starts with sk-ant-</span>';
+      } else {
+        el.innerHTML = '<span class="text-gray-400">No API key saved — demo mode only</span>';
+      }
+    }
+
+    // Clears all program data and resets the form
+    function clearProgramData() {
+      if (!confirm('Clear all program data? This cannot be undone.')) return;
+      localStorage.removeItem('programPulse_data');
+      activeDemo = null;
+      document.getElementById('demo-select').value = '';
+      document.getElementById('stakeholders-list').innerHTML = '';
+      document.getElementById('metrics-list').innerHTML = '';
+      document.getElementById('milestones-list').innerHTML = '';
+      document.getElementById('blockers-list').innerHTML = '';
+      populateForm({ stakeholders: [], metrics: [], milestones: [], blockers: [] });
+      updateDashboard(readFormData());
+      document.getElementById('save-timestamp').textContent = 'Last saved: —';
+      closeSettings();
+    }
 
     // ── Active demo state ─────────────────────────────────────────────────────
     // Tracks which demo preset is loaded so AI buttons use static responses.
@@ -1265,37 +1403,322 @@ Decisions needed: Permit amendment (8-week delay) vs. structural redesign (4-wee
       URL.revokeObjectURL(a.href);
     }
 
+    // ── Anthropic API call ────────────────────────────────────────────────────
+    // Single function for all AI calls. Never hardcode an API key here —
+    // the key lives only in the user's localStorage, set via the Settings panel.
+    async function callClaude(prompt) {
+      const apiKey = localStorage.getItem('programPulse_apiKey');
+      if (!apiKey) throw new Error('NO_KEY');
+
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2048,
+          messages: [{ role: 'user', content: prompt }],
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        const msg = err.error?.message || `API error ${response.status}`;
+        throw new Error(msg);
+      }
+
+      const data = await response.json();
+      return data.content[0].text;
+    }
+
+    // ── Format program data into structured prompt text ───────────────────────
+    // Converts the form data object into readable text Claude can reason over.
+    function formatProgramData(data) {
+      const score = calculateHealthScore(data);
+      const scoreLabel = { green: 'Green', amber: 'Amber', red: 'Red', none: 'Unknown' }[score];
+      const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+      const lines = [
+        `PROGRAM: ${data.name || 'Untitled'}`,
+        `OWNER: ${data.owner || 'Not specified'}`,
+        `PHASE: ${data.phase || 'Not specified'}`,
+        data.regulatoryFramework ? `REGULATORY FRAMEWORK: ${data.regulatoryFramework}` : '',
+        `HEALTH STATUS: ${scoreLabel}`,
+        `AS OF: ${today}`,
+        '',
+        `DESCRIPTION`,
+        data.description || 'No description provided.',
+        '',
+      ];
+
+      if (data.stakeholders?.length) {
+        lines.push('STAKEHOLDERS');
+        data.stakeholders.forEach(s => lines.push(`- ${s.name}${s.role ? `, ${s.role}` : ''}`));
+        lines.push('');
+      }
+
+      if (data.metrics?.length) {
+        lines.push('METRICS / KPIs');
+        data.metrics.forEach(m => lines.push(`- ${m.name}: ${m.current || '?'} (target: ${m.target || '?'}) — ${m.status.replace('-', ' ')}`));
+        lines.push('');
+      }
+
+      if (data.milestones?.length) {
+        lines.push('MILESTONES');
+        data.milestones.forEach(m => {
+          const due = m.dueDate ? ` | Due: ${m.dueDate}` : '';
+          const owner = m.owner ? ` | Owner: ${m.owner}` : '';
+          lines.push(`- ${m.name}${due}${owner} | Status: ${m.status.replace('-', ' ')}`);
+        });
+        lines.push('');
+      }
+
+      if (data.blockers?.length) {
+        lines.push('BLOCKERS');
+        data.blockers.forEach(b => lines.push(`- [${b.severity.toUpperCase()}] ${b.description}${b.owner ? ` (Owner: ${b.owner})` : ''}`));
+        lines.push('');
+      }
+
+      if (data.decisionsNeeded) {
+        lines.push('KEY DECISIONS NEEDED');
+        lines.push(data.decisionsNeeded);
+        lines.push('');
+      }
+
+      if (data.openRisks) {
+        lines.push('OPEN RISKS');
+        lines.push(data.openRisks);
+        lines.push('');
+      }
+
+      return lines.filter(l => l !== undefined).join('\n');
+    }
+
+    // ── Prompt builders ───────────────────────────────────────────────────────
+
+    function buildAnalyzePrompt(data) {
+      return `You are an expert program manager analyzing a program health report. Based on the data below, provide a structured analysis with exactly these four sections:
+
+HEALTH EXPLANATION
+2-3 sentences explaining the current health status in plain English for a non-technical executive.
+
+TOP 3 RISKS (by impact)
+1. [Risk and why it matters]
+2. [Risk and why it matters]
+3. [Risk and why it matters]
+
+RECOMMENDED NEXT ACTION
+One clear, specific action the program manager should take this week.
+
+ESCALATION FLAG: [Yes/No] — [One sentence reason]
+
+Be direct and specific. Use the program's actual data. Do not add extra sections or preamble.
+
+---
+${formatProgramData(data)}`;
+    }
+
+    function buildExecBriefPrompt(data) {
+      const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      return `You are an expert program manager writing an executive brief. Using the program data below, write a brief in EXACTLY this format — no extra sections, no preamble:
+
+PROGRAM: [name]
+PHASE: [phase]
+STATUS: [GREEN/AMBER/RED] — [one-line reason]
+AS OF: ${today}
+
+SITUATION
+[2-3 sentences on what this program is and where it stands]
+
+GOALS & METRICS
+- [Metric name]: [current] vs. target [target] — [status]
+(one line per metric)
+
+KEY DECISIONS NEEDED
+- [item]
+(bullet per decision)
+
+TOP RISKS
+- [Risk 1]
+- [Risk 2]
+- [Risk 3]
+
+RECOMMENDED NEXT STEPS
+1. [Action]
+2. [Action]
+3. [Action]
+
+---
+${formatProgramData(data)}`;
+    }
+
+    function buildProgramReportPrompt(data) {
+      const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      return `You are an expert program manager writing a detailed program report for an MBR or QBR. Using the program data below, write a full report in this format:
+
+PROGRAM HEALTH REPORT
+[Program name]
+Generated: ${today}
+${data.regulatoryFramework ? `Regulatory Framework: ${data.regulatoryFramework}` : ''}
+Status: [GREEN/AMBER/RED]
+
+PROGRAM OVERVIEW
+[3-5 sentence narrative: what the program is, where it stands, and what the key challenge is right now]
+
+METRICS
+[Plain text table: Metric | Current | Target | Status — align columns with spaces]
+
+MILESTONE STATUS
+[Plain text table: Milestone | Due Date | Owner | Status]
+
+BLOCKERS & RISKS
+Active Blockers: [count and severity]
+[Bullet per blocker with owner]
+
+Open Risks:
+[Bullet per risk with brief mitigation note]
+
+DECISIONS LOG
+[Bullet per pending decision with decision owners]
+
+STAKEHOLDERS
+[Bullet per stakeholder with role]
+
+RECOMMENDED ACTIONS
+[Numbered list of 3-5 concrete actions]
+
+Be specific, professional, and use the actual program data. No preamble.
+
+---
+${formatProgramData(data)}`;
+    }
+
+    function buildStatusUpdatePrompt(data) {
+      const weekOf = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      const score = calculateHealthScore(data);
+      const emoji = { green: '🟢', amber: '🟡', red: '🔴', none: '⚪' }[score];
+      const label = { green: 'Green', amber: 'Amber', red: 'Red', none: 'No Data' }[score];
+
+      return `You are an expert program manager writing a concise status update for Slack or email. Write it in EXACTLY this format — no preamble, no extra text:
+
+${data.name || 'Program'} — Week of ${weekOf}
+Phase: [phase] | Owner: [owner]
+Status: ${emoji} ${label}
+
+This week: [2-3 sentences on what was accomplished or what happened]
+Next week: [2-3 sentences on what is planned]
+Metrics: [one-line snapshot of key metrics with ✓ or ⚠️ or ❌]
+Blockers: [one line — list active blockers or "None active"]
+Decisions needed: [one line — list decisions or "None pending"]
+
+Keep it tight and scannable. Use the actual program data.
+
+---
+${formatProgramData(data)}`;
+    }
+
+    // ── Loading states ────────────────────────────────────────────────────────
+
+    function showAnalysisLoading() {
+      document.getElementById('dash-ai-content').innerHTML = `
+        <div class="flex items-center gap-2 text-blue-400">
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+          <span class="text-sm">Analyzing with Claude...</span>
+        </div>`;
+    }
+
+    function showModalLoading(title) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').textContent = '';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="flex items-center gap-2 text-gray-400 py-4">
+          <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+          </svg>
+          <span class="text-sm">Generating with Claude...</span>
+        </div>`;
+      document.getElementById('output-modal').classList.remove('hidden');
+    }
+
+    // ── No key message ────────────────────────────────────────────────────────
+    const NO_KEY_MSG = 'No API key found.\n\nTo enable live AI outputs:\n1. Click Settings in the top bar\n2. Paste your Anthropic API key (starts with sk-ant-)\n3. Hit Save\n\nDon\'t have a key? Get one free at console.anthropic.com → API Keys.\n\nYou can also load a demo preset (top bar) to see pre-written sample outputs without a key.';
+
     // ── Action button handlers ────────────────────────────────────────────────
-    // Each checks for an active demo first; live API calls come in a later step.
-    function handleAnalyze() {
+    // Routing logic: demo loaded → static, own data + key → live call, no key → help message.
+
+    async function handleAnalyze() {
       if (activeDemo && DEMO_AI[activeDemo]) {
         renderAnalysisPanel(DEMO_AI[activeDemo].analyze);
-      } else {
-        renderAnalysisPanel('No API key configured. Load a demo preset to see AI analysis, or add your Anthropic API key in Settings.');
+        return;
+      }
+      const apiKey = localStorage.getItem('programPulse_apiKey');
+      if (!apiKey) { renderAnalysisPanel(NO_KEY_MSG); return; }
+
+      showAnalysisLoading();
+      try {
+        const result = await callClaude(buildAnalyzePrompt(readFormData()));
+        renderAnalysisPanel(result);
+      } catch (e) {
+        renderAnalysisPanel(`Error: ${e.message === 'NO_KEY' ? 'No API key saved. Add one in Settings.' : e.message}`);
       }
     }
 
-    function handleExecBrief() {
+    async function handleExecBrief() {
       if (activeDemo && DEMO_AI[activeDemo]) {
         showModal('Executive Brief', DEMO_AI[activeDemo].execBrief);
-      } else {
-        showModal('Executive Brief', 'No API key configured. Load a demo preset to see a sample brief, or add your Anthropic API key in Settings.');
+        return;
+      }
+      const apiKey = localStorage.getItem('programPulse_apiKey');
+      if (!apiKey) { showModal('Executive Brief', NO_KEY_MSG); return; }
+
+      showModalLoading('Executive Brief');
+      try {
+        const result = await callClaude(buildExecBriefPrompt(readFormData()));
+        showModal('Executive Brief', result);
+      } catch (e) {
+        showModal('Executive Brief', `Error: ${e.message === 'NO_KEY' ? 'No API key saved. Add one in Settings.' : e.message}`);
       }
     }
 
-    function handleProgramReport() {
+    async function handleProgramReport() {
       if (activeDemo && DEMO_AI[activeDemo]) {
         showModal('Program Report', DEMO_AI[activeDemo].programReport);
-      } else {
-        showModal('Program Report', 'No API key configured. Load a demo preset to see a sample report, or add your Anthropic API key in Settings.');
+        return;
+      }
+      const apiKey = localStorage.getItem('programPulse_apiKey');
+      if (!apiKey) { showModal('Program Report', NO_KEY_MSG); return; }
+
+      showModalLoading('Program Report');
+      try {
+        const result = await callClaude(buildProgramReportPrompt(readFormData()));
+        showModal('Program Report', result);
+      } catch (e) {
+        showModal('Program Report', `Error: ${e.message === 'NO_KEY' ? 'No API key saved. Add one in Settings.' : e.message}`);
       }
     }
 
-    function handleStatusUpdate() {
+    async function handleStatusUpdate() {
       if (activeDemo && DEMO_AI[activeDemo]) {
         showModal('Status Update', DEMO_AI[activeDemo].statusUpdate);
-      } else {
-        showModal('Status Update', 'No API key configured. Load a demo preset to see a sample update, or add your Anthropic API key in Settings.');
+        return;
+      }
+      const apiKey = localStorage.getItem('programPulse_apiKey');
+      if (!apiKey) { showModal('Status Update', NO_KEY_MSG); return; }
+
+      showModalLoading('Status Update');
+      try {
+        const result = await callClaude(buildStatusUpdatePrompt(readFormData()));
+        showModal('Status Update', result);
+      } catch (e) {
+        showModal('Status Update', `Error: ${e.message === 'NO_KEY' ? 'No API key saved. Add one in Settings.' : e.message}`);
       }
     }
 
@@ -1306,6 +1729,9 @@ Decisions needed: Permit amendment (8-week delay) vs. structural redesign (4-wee
     document.getElementById('demo-select').addEventListener('change', (e) => {
       if (e.target.value) loadDemoPreset(e.target.value);
     });
+
+    // Show green dot on Settings button if a key is already saved
+    updateApiKeyIndicator();
 
     // Close modal on Escape key
     document.addEventListener('keydown', (e) => {
